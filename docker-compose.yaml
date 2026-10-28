@@ -7,6 +7,12 @@ services:
       - db
     ports:
       - "3000"
+    environment:
+      - DB_HOST=db
+      - DB_USER=peserta
+      - DB_PASSWORD=password
+      - DB_NAME=training
+      - APP_PORT=3000
     volumes:
       - app-data:/apps/public/images
 
