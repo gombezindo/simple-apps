@@ -16,7 +16,7 @@ services:
       - app-data:/apps/public/images
 
   db:
-    image: mariadb
+    image: "mariadb"
     restart: always
     links:
       - phpmyadmin
@@ -32,7 +32,7 @@ services:
       - ./apps/database/:/docker-entrypoint-initdb.d/
   
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+    image: "phpmyadmin"
     restart: always
     links:
       - db
@@ -40,7 +40,6 @@ services:
       - "8080:80"
     environment:
       - PMA_HOST=db
-      - PMA_PORT=3306
   
   web:
     build: ./nginx
