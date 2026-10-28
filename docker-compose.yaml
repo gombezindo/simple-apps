@@ -32,7 +32,7 @@ services:
     ports:
       - "7080:80"
     environment:
-      - PMA_HOST=dbdoc
+      - PMA_HOST=db
 
   web:
     build: ./nginx
@@ -40,7 +40,7 @@ services:
     ports:
     - "80:80"
     depends_on:
-    - backenddock
+    - backend
 
 volumes:
   app-data:
