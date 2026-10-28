@@ -1,17 +1,12 @@
 services:
+
   backend:
     build: ./apps
     restart: always
     links:
       - db
     ports:
-      - "3000:3000"
-    environment:
-      - DB_HOST=db
-      - DB_PORT=3306
-      - DB_USER=peserta
-      - DB_PASSWORD=password
-      - DB_NAME=training
+      - "3000"
     volumes:
       - app-data:/apps/public/images
 
@@ -21,35 +16,31 @@ services:
     links:
       - phpmyadmin
     ports:
-      - "3306:3306"
+      - "3306"
     environment:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_DATABASE=training
       - MYSQL_USER=peserta
       - MYSQL_PASSWORD=password
     volumes:
+      - ./apps/database/:/docker-entrypoint-initdb.d
       - db-data:/var/lib/mysql
-      - ./apps/database/:/docker-entrypoint-initdb.d/
-  
+
   phpmyadmin:
     image: "phpmyadmin"
     restart: always
-    links:
-      - db
     ports:
-      - "8080:80"
+      - "7080:80"
     environment:
       - PMA_HOST=db
-  
+
   web:
     build: ./nginx
     restart: always
-    links:
-      - backend
     ports:
-      - "80:80"
+    - "80:80"
     depends_on:
-      - backend
+    - backend
 
 volumes:
   app-data:
