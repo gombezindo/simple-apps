@@ -26,7 +26,7 @@ describe('Unit Test /app1', () => {
     });
   });
 
-describe('Integration Test Connect Database', () => {sh
+describe('Integration Test Connect Database', () => {
   beforeEach(() => {
     // Set the connection for the application to use
     app.set('connection', connection.connect);
