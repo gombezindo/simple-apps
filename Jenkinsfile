@@ -19,7 +19,7 @@ pipeline {
 
         stage('Set ENV') {
             steps {
-                withCredentials ([
+                withCredentials([
                     string(credentialsId: 'db-name', variable: 'DB_NAME'),
                     string(credentialsId: 'db-user', variable: 'DB_USER'),
                     string(credentialsId: 'db-password', variable: 'DB_PASSWORD'),
@@ -29,12 +29,12 @@ pipeline {
                     script {
                         // Membuat file .env di dalam folder apps agar terbaca oleh aplikasi & docker
                         writeFile file: 'apps/.env', text: """
-                        DB_NAME=${DB_NAME} 
-                        DB_HOST=${DB_HOST} 
-                        DB_USER=${DB_USER} 
-                        DB_PASS=${DB_PASSWORD} 
-                        APP_PORT=${APP_PORT} 
-                        """.stripIndent()
+                        DB_NAME=${DB_NAME}
+                        DB_HOST=${DB_HOST}
+                        DB_USER=${DB_USER}
+                        DB_PASS=${DB_PASSWORD}
+                        APP_PORT=${APP_PORT}
+                        """.stripIndent().trim()
                     }
                 }
             }
@@ -65,7 +65,7 @@ pipeline {
         
         stage('Deploy') {
             steps {
-                withCredentials ([
+                withCredentials([
                     string(credentialsId: 'db-name', variable: 'DB_NAME'),
                     string(credentialsId: 'db-user', variable: 'DB_USER'),
                     string(credentialsId: 'db-password', variable: 'DB_PASSWORD'),
@@ -75,16 +75,17 @@ pipeline {
                     script {
                         // Timpa file .env khusus untuk container jika host-nya berbeda
                         writeFile file: 'apps/.env', text: """
-                        DB_NAME=${DB_NAME} 
-                        DB_HOST=${DB_HOST} 
-                        DB_USER=${DB_USER} 
-                        DB_PASS=${DB_PASSWORD} 
-                        APP_PORT=${APP_PORT} 
-                        """.stripIndent()
+                        DB_NAME=${DB_NAME}
+                        DB_HOST=${DB_HOST}
+                        DB_USER=${DB_USER}
+                        DB_PASS=${DB_PASSWORD}
+                        APP_PORT=${APP_PORT}
+                        """.stripIndent().trim()
                     }
-                sh '''
-                docker compose up --build -d
-                '''
+                    sh '''
+                    docker compose up --build -d
+                    '''
+                }
             }
         }
         
