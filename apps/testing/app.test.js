@@ -13,37 +13,28 @@ describe('Unit Test /', () => {
 });
 
 describe('Unit Test /app1', () => {
-  it('should respond with "Hello App1!"', async () => {
-    const response = await request(app).get('/app1');
-    expect(response.status).toBe(200);
-  });
-});
-
-describe('Unit Test /app2', () => {
-  it('should respond with "Hello App2!"', async () => {
-    const response = await request(app).get('/app2');
-    expect(response.status).toBe(200);
-  });
-});
-
-describe('Integration Test Connect Database', () => {
-  let querySpy;
-
-  beforeEach(() => {
-    // Set mock connection query for the application to use
-    querySpy = jest.spyOn(connection, 'query').mockImplementation((sql, callback) => {
-      const mockUsers = [
-        { id: 1, name: 'dominic', email: 'dominic@gmail.com', no_telp: 5551234 },
-        { id: 2, name: 'brian', email: 'brian@gmail.com', no_telp: 5551233 }
-      ];
-      callback(null, mockUsers);
+    it('should respond with "Hello App1!"', async () => {
+      const response = await request(app).get('/app1');
+      expect(response.status).toBe(200);
     });
   });
 
+  describe('Unit Test /app2', () => {
+    it('should respond with "Hello App2!"', async () => {
+      const response = await request(app).get('/app2');
+      expect(response.status).toBe(200);
+    });
+  });
+
+describe('Integration Test Connect Database', () => {sh
+  beforeEach(() => {
+    // Set the connection for the application to use
+    app.set('connection', connection.connect);
+  });
+
   afterEach(() => {
-    if (querySpy) {
-      querySpy.mockRestore();
-    }
+    // Close the connection pool after the tests are done
+    connection.end();
   });
 
   it('should respond with users data', async () => {

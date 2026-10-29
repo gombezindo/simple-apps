@@ -25,18 +25,14 @@ app.get('/users', (req, res, next) => {
   connection.query(sql,(error, fields) => {
     if (error) {
       console.log('error', error)
-      return res.status(500).json({ error: error.message })
     } else {
       res.send(fields)
     }
   })
 });
 
-const PORT = process.env.APP_PORT || 3000;
-if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => {
-    console.log(`Example app listening on port ${PORT}`)
-  })
-}
+app.listen(process.env.APP_PORT, () => {
+  console.log(`Example app listening on port ${process.env.APP_PORT}`)
+})
 
 module.exports = app
