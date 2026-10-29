@@ -10,16 +10,39 @@ pipeline {
         
         stage('Build') {
             steps {
-                sh'''
+                sh '''
                 cd apps
                 npm install
                 '''
             }
         }
-        
+
+        stage('Set ENV') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'db_name', variable: 'db_name'),
+                    string(credentialsId: 'db_host', variable: 'db_host'),
+                    string(credentialsId: 'db_user', variable: 'db_user'),
+                    string(credentialsId: 'db_pass', variable: 'db_pass'),
+                    string(credentialsId: 'app_port', variable: 'app_port')
+                ]) {
+                    sh '''
+                    cat <<EOF > apps/.env
+DB_NAME=${db_name}
+DB_HOST=${db_host}
+DB_USER=${db_user}
+DB_PASS=${db_pass}
+APP_PORT=${app_port}
+EOF
+                    cp apps/.env .env
+                    '''
+                }
+            }
+        }
+
         stage('Testing') {
             steps {
-                sh'''
+                sh '''
                 cd apps
                 npm test
                 npm run test:coverage
@@ -29,7 +52,7 @@ pipeline {
         
         stage('Code Review') {
             steps {
-                sh'''
+                sh '''
                 cd apps
                 sonar-scanner \
                     -Dsonar.projectKey=simple-apps \
@@ -42,7 +65,7 @@ pipeline {
         
         stage('Deploy') {
             steps {
-                sh'''
+                sh '''
                 docker compose up --build -d
                 '''
             }
@@ -50,12 +73,8 @@ pipeline {
         
         stage('Backup') {
             steps {
-                 sh 'docker compose push' 
+                sh 'docker compose push' 
             }
         }
     }
 }
-
-
-
-
