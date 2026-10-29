@@ -19,23 +19,23 @@ pipeline {
 
         stage('Set ENV') {
             steps {
-                withCredentials([
-                    string(credentialsId: 'db_name', variable: 'db_name'),
-                    string(credentialsId: 'db_host', variable: 'db_host'),
-                    string(credentialsId: 'db_user', variable: 'db_user'),
-                    string(credentialsId: 'db_pass', variable: 'db_pass'),
-                    string(credentialsId: 'app_port', variable: 'app_port')
+                withCredentials ([
+                    string(credentialsId: 'db-name', variable: 'DB_NAME'),
+                    string(credentialsId: 'db-user', variable: 'DB_USER'),
+                    string(credentialsId: 'db-password', variable: 'DB_PASSWORD'),
+                    string(credentialsId: 'db-host', variable: 'DB_HOST'),
+                    string(credentialsId: 'app-port', variable: 'APP_PORT')
                 ]) {
-                    sh '''
-                    cat <<EOF > apps/.env
-DB_NAME=${db_name}
-DB_HOST=${db_host}
-DB_USER=${db_user}
-DB_PASS=${db_pass}
-APP_PORT=${app_port}
-EOF
-                    cp apps/.env .env
-                    '''
+                    script {
+                        // Membuat file .env di dalam folder apps agar terbaca oleh aplikasi & docker
+                        writeFile file: 'apps/.env', text: """
+                        DB_NAME=${DB_NAME} 
+                        DB_HOST=${DB_HOST} 
+                        DB_USER=${DB_USER} 
+                        DB_PASS=${DB_PASSWORD} 
+                        APP_PORT=${APP_PORT} 
+                        """.stripIndent()
+                    }
                 }
             }
         }
@@ -65,6 +65,23 @@ EOF
         
         stage('Deploy') {
             steps {
+                withCredentials ([
+                    string(credentialsId: 'db-name', variable: 'DB_NAME'),
+                    string(credentialsId: 'db-user', variable: 'DB_USER'),
+                    string(credentialsId: 'db-password', variable: 'DB_PASSWORD'),
+                    string(credentialsId: 'db-host-container', variable: 'DB_HOST'),
+                    string(credentialsId: 'app-port', variable: 'APP_PORT')
+                ]) {
+                    script {
+                        // Timpa file .env khusus untuk container jika host-nya berbeda
+                        writeFile file: 'apps/.env', text: """
+                        DB_NAME=${DB_NAME} 
+                        DB_HOST=${DB_HOST} 
+                        DB_USER=${DB_USER} 
+                        DB_PASS=${DB_PASSWORD} 
+                        APP_PORT=${APP_PORT} 
+                        """.stripIndent()
+                    }
                 sh '''
                 docker compose up --build -d
                 '''
